@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Magic Garden Calc</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0e0b1a;
+    --card: #1a1530;
+    --border: #3a2f6a;
+    --gold: #f5c842;
+    --rainbow-1: #ff6b6b;
+    --rainbow-2: #ffa94d;
+    --rainbow-3: #ffe066;
+    --rainbow-4: #69db7c;
+    --rainbow-5: #4dabf7;
+    --rainbow-6: #da77f2;
+    --text: #e8e0ff;
+    --muted: #8878b8;
+    --glow: rgba(245, 200, 66, 0.3);
+  }
+
+  body {
+    background: var(--bg);
+    font-family: 'Nunito', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background-image:
+      radial-gradient(ellipse 60% 40% at 50% 0%, rgba(90, 60, 180, 0.25) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 30% at 80% 80%, rgba(245, 200, 66, 0.08) 0%, transparent 60%);
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2.5rem 2.5rem 2rem;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04) inset;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--rainbow-1), var(--rainbow-2), var(--rainbow-3), var(--rainbow-4), var(--rainbow-5), var(--rainbow-6));
+    border-radius: 20px 20px 0 0;
+  }
+
+  h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.3rem;
+    background: linear-gradient(90deg, var(--rainbow-3), var(--gold), var(--rainbow-6));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 2rem;
+  }
+
+  label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  input[type=number] {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 0.65rem 1rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -moz-appearance: textfield;
+  }
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+  input[type=number]:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(245,200,66,0.15);
+  }
+
+  .hint {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: -1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .range-wrap {
+    margin-bottom: 1.8rem;
+  }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--rainbow-1), var(--rainbow-2), var(--rainbow-3), var(--rainbow-4), var(--rainbow-5), var(--rainbow-6));
+    outline: none;
+    cursor: pointer;
+    margin-top: 0.4rem;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 8px var(--glow);
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+  button {
+    width: 100%;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #7c4dff, #c849e0);
+    color: #fff;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(124,77,255,0.35);
+  }
+  button:hover { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 6px 24px rgba(124,77,255,0.45); }
+  button:active { transform: translateY(0); }
+
+  .result {
+    margin-top: 1.5rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.2rem 1.4rem;
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+  .result.show { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.45rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .result-row:last-child { border-bottom: none; }
+
+  .result-label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .result-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--gold);
+  }
+
+  select {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 0.65rem 1rem;
+    outline: none;
+    cursor: pointer;
+    margin-bottom: 1.5rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238878b8' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+  }
+  select:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(245,200,66,0.15);
+  }
+  select option { background: #1a1530; color: var(--text); }
+
+  .pet-slot {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.9rem 1rem 0.7rem;
+    margin-bottom: 0.85rem;
+    transition: opacity 0.2s, border-color 0.2s;
+  }
+
+  .pet-slot.disabled {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .pet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .pet-label-group {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .pet-toggle {
+    appearance: none;
+    width: 18px; height: 18px;
+    border: 2px solid var(--border);
+    border-radius: 5px;
+    cursor: pointer;
+    background: transparent;
+    position: relative;
+    transition: background 0.15s, border-color 0.15s;
+    pointer-events: all;
+    flex-shrink: 0;
+  }
+  .pet-toggle:checked {
+    background: var(--gold);
+    border-color: var(--gold);
+  }
+  .pet-toggle:checked::after {
+    content: '';
+    position: absolute;
+    left: 3px; top: 0px;
+    width: 5px; height: 9px;
+    border: 2px solid #1a1530;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+  }
+
+  .pet-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  .pet-val {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--gold);
+    min-width: 2.5rem;
+    text-align: right;
+  }
+
+  .slider-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .slider-row input[type=number] {
+    width: 70px;
+    flex: none;
+    font-size: 0.95rem;
+    padding: 0.4rem 0.6rem;
+  }
+
+  .slider-row input[type=range] {
+    flex: 1;
+    margin-top: 0;
+  }
+
+  .result-value.rainbow {
+    background: linear-gradient(90deg, var(--rainbow-3), var(--rainbow-4), var(--rainbow-5));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1 id="cardTitle">🌈 Rainbow / Gold Granter</h1>
+  <p class="subtitle" id="cardSubtitle">Chance to grant Rainbow / Gold mutation to a garden crop</p>
+
+  <label for="granterType">Granter Type</label>
+  <select id="granterType" onchange="onGranterChange()">
+    <option value="rainbow">🌈 Rainbow / Gold Granter</option>
+    <option value="amberlit">✨ Amberlit Granter</option>
+    <option value="dawnlit">🌅 Dawnlit Granter</option>
+    <option value="frost">❄️ Frost Granter</option>
+    <option value="snow">🌨️ Snow Granter</option>
+    <option value="rain">🌧️ Rain Granter</option>
+    <option value="cropBee">🐝 Crop Size Boost (Bee)</option>
+    <option value="cropButterfly">🦋 Crop Size Boost (Butterfly)</option>
+  </select>
+
+  <label>Pet STR Values</label>
+
+  <div class="pet-slot" id="slot1">
+    <div class="pet-header">
+      <div class="pet-label-group">
+        <input type="checkbox" class="pet-toggle" id="chk1" checked onchange="togglePet(1)">
+        <span class="pet-label">🐾 Pet 1</span>
+      </div>
+      <span class="pet-val" id="val1">50</span>
+    </div>
+    <div class="slider-row">
+      <input type="number" id="num1" min="50" max="100" value="50" oninput="liveSync(1)" onblur="clampPet(1)">
+      <input type="range"  id="rng1" min="50" max="100" value="50" oninput="syncPet(1,'rng')">
+    </div>
+  </div>
+
+  <div class="pet-slot" id="slot2">
+    <div class="pet-header">
+      <div class="pet-label-group">
+        <input type="checkbox" class="pet-toggle" id="chk2" checked onchange="togglePet(2)">
+        <span class="pet-label">🐾 Pet 2</span>
+      </div>
+      <span class="pet-val" id="val2">50</span>
+    </div>
+    <div class="slider-row">
+      <input type="number" id="num2" min="50" max="100" value="50" oninput="liveSync(2)" onblur="clampPet(2)">
+      <input type="range"  id="rng2" min="50" max="100" value="50" oninput="syncPet(2,'rng')">
+    </div>
+  </div>
+
+  <div class="pet-slot" id="slot3">
+    <div class="pet-header">
+      <div class="pet-label-group">
+        <input type="checkbox" class="pet-toggle" id="chk3" checked onchange="togglePet(3)">
+        <span class="pet-label">🐾 Pet 3</span>
+      </div>
+      <span class="pet-val" id="val3">50</span>
+    </div>
+    <div class="slider-row">
+      <input type="number" id="num3" min="50" max="100" value="50" oninput="liveSync(3)" onblur="clampPet(3)">
+      <input type="range"  id="rng3" min="50" max="100" value="50" oninput="syncPet(3,'rng')">
+    </div>
+  </div>
+
+  <p class="hint" id="hintText">Formula: 0.72% × (STR / 100) per min</p>
+
+  <button onclick="calcGranter()">✨ Calculate</button>
+
+  <div class="result" id="granterOut">
+    <div class="result-row">
+      <span class="result-label">Chance / min</span>
+      <span class="result-value" id="r-chance">—</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Average wait</span>
+      <span class="result-value rainbow" id="r-avg">—</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">95% within</span>
+      <span class="result-value" id="r-95">—</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">99% within</span>
+      <span class="result-value" id="r-99">—</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  const ABILITY_MAP = {
+    rainbow:       { title: '🌈 Rainbow / Gold Granter',     subtitle: 'Chance to grant Rainbow / Gold mutation to a garden crop', multiplier: 0.72,   scaling: 'scaled',  hint: 'Formula: 0.72% × (STR / 100) per min' },
+    amberlit:      { title: '✨ Amberlit Granter',           subtitle: 'Chance to grant Amberlit mutation to a garden crop',       multiplier: 2.0,    scaling: 'scaled',  hint: 'Formula: 2.0% × (STR / 100) per min' },
+    dawnlit:       { title: '🌅 Dawnlit Granter',            subtitle: 'Chance to grant Dawnlit mutation to a garden crop',        multiplier: 4.0,    scaling: 'scaled',  hint: 'Formula: 4.0% × (STR / 100) per min' },
+    frost:         { title: '❄️ Frost Granter',              subtitle: 'Chance to grant Frost mutation to a garden crop',          multiplier: 6.0,    scaling: 'scaled',  hint: 'Formula: 6.0% × (STR / 100) per min' },
+    snow:          { title: '🌨️ Snow Granter',               subtitle: 'Chance to grant Snow mutation to a garden crop',           multiplier: 8.0,    scaling: 'scaled',  hint: 'Formula: 8.0% × (STR / 100) per min' },
+    rain:          { title: '🌧️ Rain Granter',               subtitle: 'Chance to grant Rain mutation to a garden crop',           multiplier: 10.0,   scaling: 'scaled',  hint: 'Formula: 10.0% × (STR / 100) per min' },
+    cropBee:       { title: '🐝 Crop Size Boost (Bee)',       subtitle: 'Chance for Bee pet to trigger a crop size boost',          multiplier: 0.30,   scaling: 'scaled',  hint: 'Formula: 0.30% × (STR / 100) per min' },
+    cropButterfly: { title: '🦋 Crop Size Boost (Butterfly)', subtitle: 'Chance for Butterfly pet to trigger a crop size boost',   multiplier: 0.40,   scaling: 'scaled',  hint: 'Formula: 0.40% × (STR / 100) per min' }
+  };
+
+  function selectedAbility() { return ABILITY_MAP[document.getElementById('granterType').value]; }
+
+  function onGranterChange() {
+    const ability = selectedAbility();
+    document.getElementById('cardTitle').textContent   = ability.title;
+    document.getElementById('cardSubtitle').textContent = ability.subtitle;
+    document.getElementById('hintText').innerHTML      = ability.hint;
+    document.getElementById('granterOut').classList.remove('show');
+  }
+
+  function togglePet(n) {
+    const active = document.getElementById('chk' + n).checked;
+    document.getElementById('slot' + n).classList.toggle('disabled', !active);
+  }
+
+  // Live sync: number box → slider + display label, no clamping while typing
+  function liveSync(n) {
+    const raw = +document.getElementById('num' + n).value;
+    if (raw >= 50 && raw <= 100) {
+      document.getElementById('rng' + n).value = raw;
+      document.getElementById('val' + n).textContent = raw;
+    }
+  }
+
+  // On blur: clamp and fully sync everything
+  function clampPet(n) {
+    const num = document.getElementById('num' + n);
+    const clamped = Math.max(50, Math.min(100, +num.value || 50));
+    num.value = clamped;
+    document.getElementById('rng' + n).value = clamped;
+    document.getElementById('val' + n).textContent = clamped;
+  }
+
+  // Slider → number box + display label
+  function syncPet(n, source) {
+    const rng = document.getElementById('rng' + n);
+    const clamped = Math.max(50, Math.min(100, +rng.value));
+    document.getElementById('num' + n).value = clamped;
+    document.getElementById('val' + n).textContent = clamped;
+  }
+
+  function formatDuration(seconds) {
+    const totalMins = seconds / 60;
+    const hours = Math.floor(totalMins / 60);
+    const mins  = Math.ceil(totalMins % 60 || 1);
+    return hours ? `${hours}h ${mins}m` : `${mins}m`;
+  }
+
+  function calcGranter() {
+    const ability = selectedAbility();
+
+    // Only include pets whose checkbox is ticked
+    const petTickRates = [1, 2, 3]
+      .filter(n => document.getElementById('chk' + n).checked)
+      .map(n => {
+        const stat = Math.max(50, Math.min(100, +document.getElementById('num' + n).value));
+        const chancePerMin = ability.scaling === 'flat'
+          ? ability.multiplier * stat
+          : ability.multiplier * (stat / 100);
+        return 1 - Math.pow(1 - chancePerMin / 100, 1 / 60);
+      });
+
+    if (petTickRates.length === 0) {
+      alert('Enable at least one pet to calculate.');
+      return;
+    }
+
+    const combinedTickRate  = 1 - petTickRates.reduce((acc, p) => acc * (1 - p), 1);
+    const totalChancePerMin = (1 - Math.pow(1 - combinedTickRate, 60)) * 100;
+
+    const meanWait = 1 / combinedTickRate;
+    const within95 = -Math.log(1 - 0.95) / combinedTickRate;
+    const within99 = -Math.log(1 - 0.99) / combinedTickRate;
+
+    document.getElementById('r-chance').textContent = totalChancePerMin.toFixed(2) + '%';
+    document.getElementById('r-avg').textContent    = formatDuration(meanWait);
+    document.getElementById('r-95').textContent     = formatDuration(within95);
+    document.getElementById('r-99').textContent     = formatDuration(within99);
+
+    const panel = document.getElementById('granterOut');
+    panel.classList.remove('show');
+    void panel.offsetWidth;
+    panel.classList.add('show');
+  }
+</script>
+</body>
+</html>
