@@ -1,2 +1,0 @@
-# magiccalc
-Magic Garden Calc
