@@ -226,6 +226,7 @@
     box-shadow: 0 0 0 3px rgba(245,200,66,0.15);
   }
   select option { background: #1a1530; color: var(--text); }
+  select optgroup { background: #1a1530; color: var(--muted); font-style: normal; }
 
   .pet-slot {
     background: rgba(255,255,255,0.03);
@@ -328,16 +329,32 @@
   <h1 id="cardTitle">🌈 Rainbow / Gold Granter</h1>
   <p class="subtitle" id="cardSubtitle">Chance to grant Rainbow / Gold mutation to a garden crop</p>
 
-  <label for="granterType">Granter Type</label>
+  <label for="granterType">Ability Type</label>
   <select id="granterType" onchange="onGranterChange()">
-    <option value="rainbow">🌈 Rainbow / Gold Granter</option>
-    <option value="amberlit">✨ Amberlit Granter</option>
-    <option value="dawnlit">🌅 Dawnlit Granter</option>
-    <option value="frost">❄️ Frost Granter</option>
-    <option value="snow">🌨️ Snow Granter</option>
-    <option value="rain">🌧️ Rain Granter</option>
-    <option value="cropBee">🐝 Crop Size Boost (Bee)</option>
-    <option value="cropButterfly">🦋 Crop Size Boost (Butterfly)</option>
+    <optgroup label="Granters">
+      <option value="rainbow">🌈 Rainbow / Gold Granter</option>
+      <option value="amberlit">✨ Amberlit Granter</option>
+      <option value="dawnlit">🌅 Dawnlit Granter</option>
+	  <option value="thunderstruck">⚡ Thunderstruck Granter</option>
+      <option value="frost">❄️ Frost Granter</option>
+      <option value="snow">🌨️ Snow Granter</option>
+      <option value="rain">🌧️ Rain Granter</option>
+      <option value="cropBee">🐝 Crop Size Boost I (Bee)</option>
+      <option value="cropButterfly">🦋 Crop Size Boost II (Butterfly)</option>
+    </optgroup>
+    <optgroup label="Other Abilities">
+      <option value="plantGrowth1">🌿 Plant Growth Boost I</option>
+      <option value="plantGrowth2">🌿 Plant Growth Boost II</option>
+      <option value="eggGrowth1">🥚 Egg Growth Boost I</option>
+      <option value="eggGrowth2">🥚 Egg Growth Boost II</option>
+      <option value="eggGrowth3">🥚 Egg Growth Boost III</option>
+      <option value="cropEater">🌾 Crop Eater</option>
+      <option value="seedFinder1">🌱 Seed Finder I</option>
+      <option value="seedFinder2">🌱 Seed Finder II</option>
+      <option value="seedFinder3">🌱 Seed Finder III</option>
+      <option value="hungerRestore1">🍲 Hunger Restore I</option>
+      <option value="hungerRestore2">🍲 Hunger Restore II</option>
+    </optgroup>
   </select>
 
   <label>Pet STR Values</label>
@@ -410,23 +427,43 @@
 
 <script>
   const ABILITY_MAP = {
-    rainbow:       { title: '🌈 Rainbow / Gold Granter',     subtitle: 'Chance to grant Rainbow / Gold mutation to a garden crop', multiplier: 0.72,   scaling: 'scaled',  hint: 'Formula: 0.72% × (STR / 100) per min' },
-    amberlit:      { title: '✨ Amberlit Granter',           subtitle: 'Chance to grant Amberlit mutation to a garden crop',       multiplier: 2.0,    scaling: 'scaled',  hint: 'Formula: 2.0% × (STR / 100) per min' },
-    dawnlit:       { title: '🌅 Dawnlit Granter',            subtitle: 'Chance to grant Dawnlit mutation to a garden crop',        multiplier: 4.0,    scaling: 'scaled',  hint: 'Formula: 4.0% × (STR / 100) per min' },
-    frost:         { title: '❄️ Frost Granter',              subtitle: 'Chance to grant Frost mutation to a garden crop',          multiplier: 6.0,    scaling: 'scaled',  hint: 'Formula: 6.0% × (STR / 100) per min' },
-    snow:          { title: '🌨️ Snow Granter',               subtitle: 'Chance to grant Snow mutation to a garden crop',           multiplier: 8.0,    scaling: 'scaled',  hint: 'Formula: 8.0% × (STR / 100) per min' },
-    rain:          { title: '🌧️ Rain Granter',               subtitle: 'Chance to grant Rain mutation to a garden crop',           multiplier: 10.0,   scaling: 'scaled',  hint: 'Formula: 10.0% × (STR / 100) per min' },
-    cropBee:       { title: '🐝 Crop Size Boost (Bee)',       subtitle: 'Chance for Bee pet to trigger a crop size boost',          multiplier: 0.30,   scaling: 'scaled',  hint: 'Formula: 0.30% × (STR / 100) per min' },
-    cropButterfly: { title: '🦋 Crop Size Boost (Butterfly)', subtitle: 'Chance for Butterfly pet to trigger a crop size boost',   multiplier: 0.40,   scaling: 'scaled',  hint: 'Formula: 0.40% × (STR / 100) per min' }
+    // Granters
+    rainbow:        { title: '🌈 Rainbow / Gold Granter',     subtitle: 'Chance to grant Rainbow / Gold mutation to a garden crop',  multiplier: 0.72, scaling: 'scaled', hint: 'Formula: 0.72% × (STR / 100) per min' },
+    amberlit:       { title: '✨ Amberlit Granter',           subtitle: 'Chance to grant Amberlit mutation to a garden crop',        multiplier: 2.0,  scaling: 'scaled', hint: 'Formula: 2.0% × (STR / 100) per min' },
+    dawnlit:        { title: '🌅 Dawnlit Granter',            subtitle: 'Chance to grant Dawnlit mutation to a garden crop',         multiplier: 4.0,  scaling: 'scaled', hint: 'Formula: 4.0% × (STR / 100) per min' },
+	thunderstruck: {
+	  title: '⚡ Thunderstruck Granter',
+	  subtitle: 'Chance to grant Thunderstruck mutation to a garden crop',
+	  multiplier: 5.0,
+	  scaling: 'scaled',
+	  hint: 'Formula: 5.0% × (STR / 100) per min'
+	},
+    frost:          { title: '❄️ Frost Granter',              subtitle: 'Chance to grant Frost mutation to a garden crop',           multiplier: 6.0,  scaling: 'scaled', hint: 'Formula: 6.0% × (STR / 100) per min' },
+    snow:           { title: '🌨️ Snow Granter',               subtitle: 'Chance to grant Snow mutation to a garden crop',            multiplier: 8.0,  scaling: 'scaled', hint: 'Formula: 8.0% × (STR / 100) per min' },
+    rain:           { title: '🌧️ Rain Granter',               subtitle: 'Chance to grant Rain mutation to a garden crop',            multiplier: 10.0, scaling: 'scaled', hint: 'Formula: 10.0% × (STR / 100) per min' },
+    cropBee:        { title: '🐝 Crop Size Boost I (Bee)',     subtitle: 'Chance for Bee pet to trigger a crop size boost',           multiplier: 0.30, scaling: 'scaled', hint: 'Formula: 0.30% × (STR / 100) per min' },
+    cropButterfly:  { title: '🦋 Crop Size Boost II (Butterfly)', subtitle: 'Chance for Butterfly pet to trigger a crop size boost', multiplier: 0.40, scaling: 'scaled', hint: 'Formula: 0.40% × (STR / 100) per min' },
+    // Other Abilities
+    plantGrowth1:   { title: '🌿 Plant Growth Boost I',       subtitle: 'Reduces crop growth time per tick.',                        multiplier: 24,   scaling: 'scaled', hint: 'Formula: 24% × (STR / 100) per min' },
+    plantGrowth2:   { title: '🌿 Plant Growth Boost II',      subtitle: 'Reduces crop growth time per tick.',                        multiplier: 27,   scaling: 'scaled', hint: 'Formula: 27% × (STR / 100) per min' },
+    eggGrowth1:     { title: '🥚 Egg Growth Boost I',         subtitle: 'Reduces egg hatch time per tick.',                          multiplier: 21,   scaling: 'scaled', hint: 'Formula: 21% × (STR / 100) per min' },
+    eggGrowth2:     { title: '🥚 Egg Growth Boost II',        subtitle: 'Reduces egg hatch time per tick.',                          multiplier: 24,   scaling: 'scaled', hint: 'Formula: 24% × (STR / 100) per min' },
+    eggGrowth3:     { title: '🥚 Egg Growth Boost III',       subtitle: 'Reduces egg hatch time per tick.',                          multiplier: 27,   scaling: 'scaled', hint: 'Formula: 27% × (STR / 100) per min' },
+    cropEater:      { title: '🌾 Crop Eater',                 subtitle: 'Boosts sell price of nearby crops per tick.',               multiplier: 60,   scaling: 'scaled', hint: 'Formula: 60% × (STR / 100) per min' },
+    seedFinder1:    { title: '🌱 Seed Finder I',              subtitle: 'Chance to find a Common or Uncommon seed per tick.',        multiplier: 40,   scaling: 'scaled', hint: 'Formula: 40% × (STR / 100) per min' },
+    seedFinder2:    { title: '🌱 Seed Finder II',             subtitle: 'Chance to find a Rare or Legendary seed per tick.',         multiplier: 20,   scaling: 'scaled', hint: 'Formula: 20% × (STR / 100) per min' },
+    seedFinder3:    { title: '🌱 Seed Finder III',            subtitle: 'Chance to find a Mythical seed per tick.',                  multiplier: 10,   scaling: 'scaled', hint: 'Formula: 10% × (STR / 100) per min' },
+    hungerRestore1: { title: '🍲 Hunger Restore I',           subtitle: 'Restores pet hunger per tick.',                             multiplier: 12,   scaling: 'scaled', hint: 'Formula: 12% × (STR / 100) per min' },
+    hungerRestore2: { title: '🍲 Hunger Restore II',          subtitle: 'Restores pet hunger per tick.',                             multiplier: 14,   scaling: 'scaled', hint: 'Formula: 14% × (STR / 100) per min' },
   };
 
   function selectedAbility() { return ABILITY_MAP[document.getElementById('granterType').value]; }
 
   function onGranterChange() {
     const ability = selectedAbility();
-    document.getElementById('cardTitle').textContent   = ability.title;
+    document.getElementById('cardTitle').textContent    = ability.title;
     document.getElementById('cardSubtitle').textContent = ability.subtitle;
-    document.getElementById('hintText').innerHTML      = ability.hint;
+    document.getElementById('hintText').innerHTML       = ability.hint;
     document.getElementById('granterOut').classList.remove('show');
   }
 
@@ -473,7 +510,6 @@
   function calcGranter() {
     const ability = selectedAbility();
 
-    // Only include pets whose checkbox is ticked
     const petTickRates = [1, 2, 3]
       .filter(n => document.getElementById('chk' + n).checked)
       .map(n => {
