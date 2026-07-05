@@ -401,6 +401,21 @@
     </div>
   </div>
 
+  <div id="eggTypeWrap" style="display:none;">
+    <label for="eggType">Egg Type</label>
+    <select id="eggType">
+      <option value="600">🥚 Common Egg (10 min)</option>
+      <option value="3600">🥚 Uncommon Egg (1 hr)</option>
+      <option value="21600">🥚 Rare Egg (6 hr)</option>
+      <option value="43200">🥚 Legendary Egg (12 hr)</option>
+      <option value="43200_snow">❄️ Snow Egg (12 hr)</option>
+      <option value="43200_dawn">🌅 Dawn Egg (12 hr)</option>
+      <option value="43200_thunder">⚡ Thunder Egg (12 hr)</option>
+      <option value="43200_horse">🐴 Horse Egg (12 hr)</option>
+      <option value="86400">✨ Mythical Egg (24 hr)</option>
+    </select>
+  </div>
+
   <p class="hint" id="hintText">Formula: 0.72% × (STR / 100) per min</p>
 
   <button onclick="calcGranter()">✨ Calculate</button>
@@ -421,6 +436,18 @@
     <div class="result-row">
       <span class="result-label">99% within</span>
       <span class="result-value" id="r-99">—</span>
+    </div>
+    <div class="result-row" id="r-egg-base-row" style="display:none;">
+      <span class="result-label">Base hatch time</span>
+      <span class="result-value" id="r-egg-base">—</span>
+    </div>
+    <div class="result-row" id="r-egg-boosted-row" style="display:none;">
+      <span class="result-label">Boosted hatch time</span>
+      <span class="result-value rainbow" id="r-egg-boosted">—</span>
+    </div>
+    <div class="result-row" id="r-egg-saved-row" style="display:none;">
+      <span class="result-label">Time saved</span>
+      <span class="result-value" id="r-egg-saved">—</span>
     </div>
   </div>
 </div>
@@ -446,9 +473,9 @@
     // Other Abilities
     plantGrowth1:   { title: '🌿 Plant Growth Boost I',       subtitle: 'Reduces crop growth time per tick.',                        multiplier: 24,   scaling: 'scaled', hint: 'Formula: 24% × (STR / 100) per min' },
     plantGrowth2:   { title: '🌿 Plant Growth Boost II',      subtitle: 'Reduces crop growth time per tick.',                        multiplier: 27,   scaling: 'scaled', hint: 'Formula: 27% × (STR / 100) per min' },
-    eggGrowth1:     { title: '🥚 Egg Growth Boost I',         subtitle: 'Reduces egg hatch time per tick.',                          multiplier: 21,   scaling: 'scaled', hint: 'Formula: 21% × (STR / 100) per min' },
-    eggGrowth2:     { title: '🥚 Egg Growth Boost II',        subtitle: 'Reduces egg hatch time per tick.',                          multiplier: 24,   scaling: 'scaled', hint: 'Formula: 24% × (STR / 100) per min' },
-    eggGrowth3:     { title: '🥚 Egg Growth Boost III',       subtitle: 'Reduces egg hatch time per tick.',                          multiplier: 27,   scaling: 'scaled', hint: 'Formula: 27% × (STR / 100) per min' },
+    eggGrowth1:     { title: '🥚 Egg Growth Boost I',         subtitle: 'Reduces egg hatch time per tick.',                          multiplier: 21,   scaling: 'scaled', hint: 'Formula: 7m × (STR / 100) per min',  eggBoostMin: 7 },
+    eggGrowth2:     { title: '🥚 Egg Growth Boost II',        subtitle: 'Reduces egg hatch time per tick.',                          multiplier: 24,   scaling: 'scaled', hint: 'Formula: 9m × (STR / 100) per min',  eggBoostMin: 9 },
+    eggGrowth3:     { title: '🥚 Egg Growth Boost III',       subtitle: 'Reduces egg hatch time per tick.',                          multiplier: 27,   scaling: 'scaled', hint: 'Formula: 11m × (STR / 100) per min', eggBoostMin: 11 },
     cropEater:      { title: '🌾 Crop Eater',                 subtitle: 'Boosts sell price of nearby crops per tick.',               multiplier: 60,   scaling: 'scaled', hint: 'Formula: 60% × (STR / 100) per min' },
     seedFinder1:    { title: '🌱 Seed Finder I',              subtitle: 'Chance to find a Common or Uncommon seed per tick.',        multiplier: 40,   scaling: 'scaled', hint: 'Formula: 40% × (STR / 100) per min' },
     seedFinder2:    { title: '🌱 Seed Finder II',             subtitle: 'Chance to find a Rare or Legendary seed per tick.',         multiplier: 20,   scaling: 'scaled', hint: 'Formula: 20% × (STR / 100) per min' },
@@ -459,11 +486,16 @@
 
   function selectedAbility() { return ABILITY_MAP[document.getElementById('granterType').value]; }
 
+  function isEggGrowth() {
+    return document.getElementById('granterType').value.startsWith('eggGrowth');
+  }
+
   function onGranterChange() {
     const ability = selectedAbility();
     document.getElementById('cardTitle').textContent    = ability.title;
     document.getElementById('cardSubtitle').textContent = ability.subtitle;
     document.getElementById('hintText').innerHTML       = ability.hint;
+    document.getElementById('eggTypeWrap').style.display = isEggGrowth() ? 'block' : 'none';
     document.getElementById('granterOut').classList.remove('show');
   }
 
@@ -536,6 +568,30 @@
     document.getElementById('r-avg').textContent    = formatDuration(meanWait);
     document.getElementById('r-95').textContent     = formatDuration(within95);
     document.getElementById('r-99').textContent     = formatDuration(within99);
+
+    const showEgg = isEggGrowth();
+    document.getElementById('r-egg-base-row').style.display    = showEgg ? 'flex' : 'none';
+    document.getElementById('r-egg-boosted-row').style.display = showEgg ? 'flex' : 'none';
+    document.getElementById('r-egg-saved-row').style.display   = showEgg ? 'flex' : 'none';
+
+    if (showEgg) {
+      const baseSeconds = parseInt(document.getElementById('eggType').value, 10);
+      const baseMinutes = baseSeconds / 60;
+      const totalBoostMin = [1, 2, 3]
+        .filter(n => document.getElementById('chk' + n).checked)
+        .reduce((sum, n) => {
+          const stat = Math.max(50, Math.min(100, +document.getElementById('num' + n).value));
+          return sum + ability.eggBoostMin * (stat / 100);
+        }, 0);
+      const effectiveSpeed = 1 + totalBoostMin;
+      const boostedMinutes = baseMinutes / effectiveSpeed;
+      const boostedSeconds = boostedMinutes * 60;
+      const saved = baseSeconds - boostedSeconds;
+
+      document.getElementById('r-egg-base').textContent    = formatDuration(baseSeconds);
+      document.getElementById('r-egg-boosted').textContent = formatDuration(boostedSeconds);
+      document.getElementById('r-egg-saved').textContent   = formatDuration(saved);
+    }
 
     const panel = document.getElementById('granterOut');
     panel.classList.remove('show');
