@@ -51,6 +51,14 @@
     padding:12px; margin-bottom:10px;
   }
   .pet-slot.disabled { opacity:.45; pointer-events:none; }
+  /* Reads as one more pet row so the toggle sits with the STR values it changes. */
+  .crystal-row {
+    display:flex; align-items:center; gap:8px;
+    background:var(--panel2); border:1px solid var(--line); border-radius:10px;
+    padding:12px; margin-bottom:10px; cursor:pointer;
+  }
+  .crystal-row .pet-label { cursor:pointer; }
+  .crystal-row .crystal-note { margin-left:auto; font-size:12px; color:var(--dim); }
   .pet-header {
     display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:10px;
   }
@@ -156,6 +164,12 @@
   </select>
 
   <label>Pet STR Values</label>
+
+  <label class="crystal-row" for="chkCrystal">
+    <input type="checkbox" class="pet-toggle" id="chkCrystal" onchange="calcGranter()">
+    <span class="pet-label">💎 Strength Crystal</span>
+    <span class="crystal-note">+10 STR to every pet</span>
+  </label>
 
   <div class="pet-slot" id="slot1">
     <div class="pet-header">
@@ -357,13 +371,23 @@
     return `${s}s`;
   }
 
+  /**
+   * A pet's STR as the game reckons it. The slider is what the pet has earned, capped at 100; a
+   * Strength Crystal adds ten on top of that and is deliberately not clamped, because the game adds
+   * its bonus to the figure without a ceiling - a maxed pet really does roll at 110.
+   */
+  function petStrength(n) {
+    const stat = Math.max(50, Math.min(100, +document.getElementById('num' + n).value));
+    return stat + (document.getElementById('chkCrystal').checked ? 10 : 0);
+  }
+
   function calcGranter() {
     const ability = selectedAbility();
 
     const petTickRates = [1, 2, 3]
       .filter(n => document.getElementById('chk' + n).checked)
       .map(n => {
-        const stat = Math.max(50, Math.min(100, +document.getElementById('num' + n).value));
+        const stat = petStrength(n);
         const chancePerMin = ability.scaling === 'flat'
           ? ability.multiplier * stat
           : ability.multiplier * (stat / 100);
@@ -397,10 +421,7 @@
       const baseMinutes = baseSeconds / 60;
       const totalBoostMin = [1, 2, 3]
         .filter(n => document.getElementById('chk' + n).checked)
-        .reduce((sum, n) => {
-          const stat = Math.max(50, Math.min(100, +document.getElementById('num' + n).value));
-          return sum + ability.eggBoostMin * (stat / 100);
-        }, 0);
+        .reduce((sum, n) => sum + ability.eggBoostMin * (petStrength(n) / 100), 0);
       const effectiveSpeed = 1 + totalBoostMin;
       const boostedMinutes = baseMinutes / effectiveSpeed;
       const boostedSeconds = boostedMinutes * 60;
