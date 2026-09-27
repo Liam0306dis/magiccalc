@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Granter Calculator</title>
+<title>Granter &amp; Ability Calculator</title>
 <style>
   :root {
     --bg:#12141a; --panel:#1b1e27; --panel2:#232733; --line:#2c3140;
@@ -116,6 +116,14 @@
   .calc-link:hover { border-color:var(--accent); }
   .calc-link b { display:block; font-size:13px; margin-bottom:3px; }
   .calc-link span { display:block; font-size:11.5px; color:var(--dim); line-height:1.35; }
+  .ability-desc { margin:-6px 0 8px; color:var(--dim); font-size:13px; }
+  .ability-meta { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+  .ability-meta:empty { display:none; }
+  .chip { padding:2px 9px; border-radius:999px; background:var(--panel2); border:1px solid var(--line); color:var(--dim); font-size:12px; }
+  .chip.warn { color:var(--warn); border-color:rgba(255,155,107,.35); }
+  [hidden] { display:none !important; }
+  .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
+  label.pet-label-group { margin:0; text-transform:none; cursor:pointer; }
   @media (max-width:520px) {
     body { padding:20px 10px 48px; }
     .card { padding:16px 12px; }
@@ -127,245 +135,245 @@
     .calc-link { flex-basis:100%; max-width:none; }
   }
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style id="mg-theme">
+  /* Shared look for every Magic Garden tool, loaded after the page's own styles so these win. */
+  :root {
+    --bg:#0d1010; --panel:#151a18; --panel2:#1c231f; --line:rgba(255,255,255,.09);
+    --text:#eef2ef; --txt:#eef2ef; --dim:#a7b0aa; --faint:#7d8880;
+    --accent:#b89cff; --accent2:#7ee0c0; --good:#65d69a; --gold:#f5c542; --warn:#fbbf24; --bad:#f87171;
+  }
+  html { color-scheme:dark; }
+  body {
+    background:radial-gradient(900px 420px at 50% -160px, rgba(184,156,255,.11), transparent 70%) no-repeat, var(--bg);
+    font-family:"Outfit",system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  .card { box-shadow:0 1px 0 rgba(255,255,255,.03) inset, 0 8px 24px rgba(0,0,0,.18); }
+  .mg-nav { display:flex; margin:0 0 16px; }
+  .mg-nav a { display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border:1px solid var(--line); border-radius:999px; background:var(--panel); color:var(--dim); font-size:12.5px; text-decoration:none; }
+  .mg-nav a:hover { color:var(--text); border-color:var(--accent); }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  input:focus, select:focus, textarea:focus { border-color:var(--accent); }
+  .calc-link { transition:border-color .15s, background .15s; }
+  .calc-link:hover { border-color:var(--accent); }
+  .calc-link b::after { content:" \2197"; color:var(--faint); font-weight:400; }
+</style>
 </head>
 <body>
 <div class="wrap">
-  <h1 id="cardTitle">🌈 Rainbow / Gold Granter</h1>
-  <p class="subtitle" id="cardSubtitle">Chance to grant Rainbow / Gold mutation to a garden crop</p>
+  <nav class="mg-nav" aria-label="Site"><a href="https://liam0306dis.github.io/hub/">&larr; All Magic Garden tools</a></nav>
+  <h1>Granter &amp; Ability Calculator</h1>
+  <p class="subtitle">How often a pet ability fires for your team, how long you will wait, and how much time growth and hatch boosts save.</p>
 
   <div class="card">
-  <h2>Inputs</h2>
-  <label for="granterType">Ability Type</label>
-  <select id="granterType" onchange="onGranterChange()">
-    <optgroup label="Granters">
-      <option value="rainbow">🌈 Rainbow / Gold Granter</option>
-      <option value="amberlit">✨ Amberlit Granter</option>
-      <option value="dawnlit">🌅 Dawnlit Granter</option>
-	  <option value="thunderstruck">⚡ Thunderstruck Granter</option>
-      <option value="frost">❄️ Frost Granter</option>
-      <option value="snow">🌨️ Snow Granter</option>
-      <option value="rain">🌧️ Rain Granter</option>
-      <option value="cropBee">🐝 Crop Size Boost I (Bee)</option>
-      <option value="cropButterfly">🦋 Crop Size Boost II (Butterfly)</option>
-    </optgroup>
-    <optgroup label="Other Abilities">
-      <option value="plantGrowth1">🌿 Plant Growth Boost I</option>
-      <option value="plantGrowth2">🌿 Plant Growth Boost II</option>
-      <option value="eggGrowth1">🥚 Egg Growth Boost I</option>
-      <option value="eggGrowth2">🥚 Egg Growth Boost II</option>
-      <option value="eggGrowth3">🥚 Egg Growth Boost III</option>
-      <option value="cropEater">🌾 Crop Eater</option>
-      <option value="seedFinder1">🌱 Seed Finder I</option>
-      <option value="seedFinder2">🌱 Seed Finder II</option>
-      <option value="seedFinder3">🌱 Seed Finder III</option>
-      <option value="hungerRestore1">🍲 Hunger Restore I</option>
-      <option value="hungerRestore2">🍲 Hunger Restore II</option>
-    </optgroup>
-  </select>
-
-  <label>Pet STR Values</label>
-
-  <label class="crystal-row" for="chkCrystal">
-    <input type="checkbox" class="pet-toggle" id="chkCrystal" onchange="calcGranter()">
-    <span class="pet-label">💎 Strength Crystal</span>
-    <span class="crystal-note">+10 STR to every pet</span>
-  </label>
-
-  <div class="pet-slot" id="slot1">
-    <div class="pet-header">
-      <div class="pet-label-group">
-        <input type="checkbox" class="pet-toggle" id="chk1" checked onchange="togglePet(1)">
-        <span class="pet-label">🐾 Pet 1</span>
-      </div>
-      <span class="pet-val" id="val1">50</span>
+    <h2>Ability</h2>
+    <label for="granterType" class="sr-only">Ability</label>
+    <select id="granterType"></select>
+    <p class="ability-desc" id="abilityDesc"></p>
+    <div class="ability-meta" id="abilityMeta"></div>
+    <div id="eggTypeWrap" hidden>
+      <label for="eggType">Egg</label>
+      <select id="eggType"></select>
     </div>
-    <div class="slider-row">
-      <input type="number" id="num1" min="50" max="100" value="50" oninput="liveSync(1)" onblur="clampPet(1)">
-      <input type="range"  id="rng1" min="50" max="100" value="50" oninput="syncPet(1,'rng')">
-    </div>
-  </div>
-
-  <div class="pet-slot" id="slot2">
-    <div class="pet-header">
-      <div class="pet-label-group">
-        <input type="checkbox" class="pet-toggle" id="chk2" checked onchange="togglePet(2)">
-        <span class="pet-label">🐾 Pet 2</span>
-      </div>
-      <span class="pet-val" id="val2">50</span>
-    </div>
-    <div class="slider-row">
-      <input type="number" id="num2" min="50" max="100" value="50" oninput="liveSync(2)" onblur="clampPet(2)">
-      <input type="range"  id="rng2" min="50" max="100" value="50" oninput="syncPet(2,'rng')">
-    </div>
-  </div>
-
-  <div class="pet-slot" id="slot3">
-    <div class="pet-header">
-      <div class="pet-label-group">
-        <input type="checkbox" class="pet-toggle" id="chk3" checked onchange="togglePet(3)">
-        <span class="pet-label">🐾 Pet 3</span>
-      </div>
-      <span class="pet-val" id="val3">50</span>
-    </div>
-    <div class="slider-row">
-      <input type="number" id="num3" min="50" max="100" value="50" oninput="liveSync(3)" onblur="clampPet(3)">
-      <input type="range"  id="rng3" min="50" max="100" value="50" oninput="syncPet(3,'rng')">
-    </div>
-  </div>
-
-  <div id="eggTypeWrap" style="display:none;">
-    <label for="eggType">Egg Type</label>
-    <select id="eggType">
-      <option value="600">🥚 Common Egg (10 min)</option>
-      <option value="3600">🥚 Uncommon Egg (1 hr)</option>
-      <option value="21600">🥚 Rare Egg (6 hr)</option>
-      <option value="43200">🥚 Legendary Egg (12 hr)</option>
-      <option value="43200_snow">❄️ Snow Egg (12 hr)</option>
-      <option value="43200_dawn">🌅 Dawn Egg (12 hr)</option>
-      <option value="43200_thunder">⚡ Thunder Egg (12 hr)</option>
-      <option value="43200_horse">🐴 Horse Egg (12 hr)</option>
-      <option value="86400">✨ Mythical Egg (24 hr)</option>
-    </select>
-  </div>
-
-  <p class="hint" id="hintText">Formula: 0.72% × (STR / 100) per min</p>
-
-  <button onclick="calcGranter()">✨ Calculate</button>
   </div>
 
   <div class="card">
-  <h2>Result</h2>
-  <div class="result" id="granterOut">
-    <div class="result-row">
-      <span class="result-label">Chance / min</span>
-      <span class="result-value" id="r-chance">—</span>
-    </div>
-    <div class="result-row">
-      <span class="result-label">Average wait</span>
-      <span class="result-value rainbow" id="r-avg">—</span>
-    </div>
-    <div class="result-row">
-      <span class="result-label">95% within</span>
-      <span class="result-value" id="r-95">—</span>
-    </div>
-    <div class="result-row">
-      <span class="result-label">99% within</span>
-      <span class="result-value" id="r-99">—</span>
-    </div>
-    <div class="result-row" id="r-egg-base-row" style="display:none;">
-      <span class="result-label">Base hatch time</span>
-      <span class="result-value" id="r-egg-base">—</span>
-    </div>
-    <div class="result-row" id="r-egg-boosted-row" style="display:none;">
-      <span class="result-label">Boosted hatch time</span>
-      <span class="result-value rainbow" id="r-egg-boosted">—</span>
-    </div>
-    <div class="result-row" id="r-egg-saved-row" style="display:none;">
-      <span class="result-label">Time saved</span>
-      <span class="result-value" id="r-egg-saved">—</span>
-    </div>
+    <h2>Team strength</h2>
+    <label class="crystal-row" for="chkCrystal">
+      <input type="checkbox" class="pet-toggle" id="chkCrystal">
+      <span class="pet-label">Strength Crystal</span>
+      <span class="crystal-note">+10 STR to every pet</span>
+    </label>
+    <div id="petSlots"></div>
+    <p class="hint" id="hintText"></p>
   </div>
+
+  <div class="card">
+    <h2>Result</h2>
+    <div class="result show" id="granterOut">
+      <div class="result-row">
+        <span class="result-label">Team chance per minute</span>
+        <span class="result-value" id="r-chance">-</span>
+      </div>
+      <div class="result-row">
+        <span class="result-label">Average wait</span>
+        <span class="result-value rainbow" id="r-avg">-</span>
+      </div>
+      <div class="result-row">
+        <span class="result-label">95% of the time within</span>
+        <span class="result-value" id="r-95">-</span>
+      </div>
+      <div class="result-row">
+        <span class="result-label">99% of the time within</span>
+        <span class="result-value" id="r-99">-</span>
+      </div>
+      <div class="result-row" id="r-growth-row" hidden>
+        <span class="result-label">Growth skipped per hour</span>
+        <span class="result-value rainbow" id="r-growth">-</span>
+      </div>
+      <div class="result-row" id="r-egg-base-row" hidden>
+        <span class="result-label">Base hatch time</span>
+        <span class="result-value" id="r-egg-base">-</span>
+      </div>
+      <div class="result-row" id="r-egg-boosted-row" hidden>
+        <span class="result-label">Expected hatch time</span>
+        <span class="result-value rainbow" id="r-egg-boosted">-</span>
+      </div>
+      <div class="result-row" id="r-egg-saved-row" hidden>
+        <span class="result-label">Time saved</span>
+        <span class="result-value" id="r-egg-saved">-</span>
+      </div>
+    </div>
+    <p class="hint" id="resultNote"></p>
   </div>
 
   <div class="card">
   <div class="calc-links">
     <div class="calc-links-title">Other tools</div>
-    <a class="calc-link" href="https://discord.com/channels/808935495543160852/1532163413738782740/1532163413738782740"><b>Garden Companion</b><span>Open the Garden Companion userscript post on Discord.</span></a>
-    <a class="calc-link" href="https://discord.com/channels/808935495543160852/1490498595219308785/1490498595219308785"><b>Garden Overview</b><span>Open the Garden Overview userscript post on Discord.</span></a>
-    <a class="calc-link" href="https://discord.com/channels/808935495543160852/1526739574896722082/1526739574896722082"><b>Coin Finder Silencer</b><span>Open the Coin Finder Silencer userscript post on Discord.</span></a>
-    <a class="calc-link" href="https://discord.com/channels/808935495543160852/1527680568630968411/1527680568630968411"><b>Drag to Move Plants</b><span>Open the Drag to Move Plants userscript post on Discord.</span></a>
-    <a class="calc-link" href="https://liam0306dis.github.io/petfood/"><b>Pet Feeding</b><span>See which is the best food for your pets and work out how many food plants/seeds you will go through.</span></a>
-    <a class="calc-link" href="https://liam0306dis.github.io/celestial-layout/"><b>Celestial Placement</b><span>Plan celestial placements with Dawn and Amber mutation coverage.</span></a>
+    <a class="calc-link" href="https://discord.com/channels/808935495543160852/1532163413738782740/1532163413738782740"><b>Garden Companion</b><span>Open the Garden Companion userscript post on Discord. Includes the old Garden Overview, Coin Finder Silencer and Drag to Move Plants.</span></a>
+    <a class="calc-link" href="https://liam0306dis.github.io/petfood/"><b>Pet Feeding</b><span>Find the best food for your pets and how many plants or seeds they get through.</span></a>
+    <a class="calc-link" href="https://liam0306dis.github.io/hunger/"><b>Pet Hunger</b><span>Check whether Hunger Restore and Hunger Boost keep a pet team fed.</span></a>
     <a class="calc-link" href="https://liam0306dis.github.io/magic-dust-calc/"><b>Magic Dust</b><span>Estimate pet dust value and expected dust from eggs.</span></a>
-    <a class="calc-link" href="https://liam0306dis.github.io/capsule-calc/"><b>Dawn Capsule</b><span>Estimate capsules per Dawn and compare capture cadence options.</span></a>
+    <a class="calc-link" href="https://liam0306dis.github.io/capsule-calc/"><b>Capsules</b><span>Expected Dawn and Amber capsules and the best capture cadence.</span></a>
     <a class="calc-link" href="https://liam0306dis.github.io/farm-projection/"><b>Farm Projection</b><span>Project a farm's finished value and the time needed to get there.</span></a>
+    <a class="calc-link" href="https://liam0306dis.github.io/celestial-layout/"><b>Celestial Placement</b><span>Plan celestial placements with Dawn and Amber mutation coverage.</span></a>
     <a class="calc-link" href="https://liam0306dis.github.io/garden-layout/"><b>Garden Layout Planner</b><span>Plan your whole farm layout - plants, mutations and decorations.</span></a>
   </div>
   </div>
 </div>
 
 <script>
-  const ABILITY_MAP = {
-    // Granters
-    rainbow:        { title: '🌈 Rainbow / Gold Granter',     subtitle: 'Chance to grant Rainbow / Gold mutation to a garden crop',  multiplier: 0.72, scaling: 'scaled', hint: 'Formula: 0.72% × (STR / 100) per min' },
-    amberlit:       { title: '✨ Amberlit Granter',           subtitle: 'Chance to grant Amberlit mutation to a garden crop',        multiplier: 2.0,  scaling: 'scaled', hint: 'Formula: 2.0% × (STR / 100) per min' },
-    dawnlit:        { title: '🌅 Dawnlit Granter',            subtitle: 'Chance to grant Dawnlit mutation to a garden crop',         multiplier: 4.0,  scaling: 'scaled', hint: 'Formula: 4.0% × (STR / 100) per min' },
-	thunderstruck: {
-	  title: '⚡ Thunderstruck Granter',
-	  subtitle: 'Chance to grant Thunderstruck mutation to a garden crop',
-	  multiplier: 5.0,
-	  scaling: 'scaled',
-	  hint: 'Formula: 5.0% × (STR / 100) per min'
-	},
-    frost:          { title: '❄️ Frost Granter',              subtitle: 'Chance to grant Frost mutation to a garden crop',           multiplier: 6.0,  scaling: 'scaled', hint: 'Formula: 6.0% × (STR / 100) per min' },
-    snow:           { title: '🌨️ Snow Granter',               subtitle: 'Chance to grant Snow mutation to a garden crop',            multiplier: 8.0,  scaling: 'scaled', hint: 'Formula: 8.0% × (STR / 100) per min' },
-    rain:           { title: '🌧️ Rain Granter',               subtitle: 'Chance to grant Rain mutation to a garden crop',            multiplier: 10.0, scaling: 'scaled', hint: 'Formula: 10.0% × (STR / 100) per min' },
-    cropBee:        { title: '🐝 Crop Size Boost I (Bee)',     subtitle: 'Chance for Bee pet to trigger a crop size boost',           multiplier: 0.30, scaling: 'scaled', hint: 'Formula: 0.30% × (STR / 100) per min' },
-    cropButterfly:  { title: '🦋 Crop Size Boost II (Butterfly)', subtitle: 'Chance for Butterfly pet to trigger a crop size boost', multiplier: 0.40, scaling: 'scaled', hint: 'Formula: 0.40% × (STR / 100) per min' },
-    // Other Abilities
-    plantGrowth1:   { title: '🌿 Plant Growth Boost I',       subtitle: 'Reduces crop growth time per tick.',                        multiplier: 24,   scaling: 'scaled', hint: 'Formula: 24% × (STR / 100) per min' },
-    plantGrowth2:   { title: '🌿 Plant Growth Boost II',      subtitle: 'Reduces crop growth time per tick.',                        multiplier: 27,   scaling: 'scaled', hint: 'Formula: 27% × (STR / 100) per min' },
-    eggGrowth1:     { title: '🥚 Egg Growth Boost I',         subtitle: 'Reduces egg hatch time per tick.',                          multiplier: 21,   scaling: 'scaled', hint: 'Formula: 7m × (STR / 100) per min',  eggBoostMin: 7 },
-    eggGrowth2:     { title: '🥚 Egg Growth Boost II',        subtitle: 'Reduces egg hatch time per tick.',                          multiplier: 24,   scaling: 'scaled', hint: 'Formula: 9m × (STR / 100) per min',  eggBoostMin: 9 },
-    eggGrowth3:     { title: '🥚 Egg Growth Boost III',       subtitle: 'Reduces egg hatch time per tick.',                          multiplier: 27,   scaling: 'scaled', hint: 'Formula: 11m × (STR / 100) per min', eggBoostMin: 11 },
-    cropEater:      { title: '🌾 Crop Eater',                 subtitle: 'Boosts sell price of nearby crops per tick.',               multiplier: 60,   scaling: 'scaled', hint: 'Formula: 60% × (STR / 100) per min' },
-    seedFinder1:    { title: '🌱 Seed Finder I',              subtitle: 'Chance to find a Common or Uncommon seed per tick.',        multiplier: 40,   scaling: 'scaled', hint: 'Formula: 40% × (STR / 100) per min' },
-    seedFinder2:    { title: '🌱 Seed Finder II',             subtitle: 'Chance to find a Rare or Legendary seed per tick.',         multiplier: 20,   scaling: 'scaled', hint: 'Formula: 20% × (STR / 100) per min' },
-    seedFinder3:    { title: '🌱 Seed Finder III',            subtitle: 'Chance to find a Mythical seed per tick.',                  multiplier: 10,   scaling: 'scaled', hint: 'Formula: 10% × (STR / 100) per min' },
-    hungerRestore1: { title: '🍲 Hunger Restore I',           subtitle: 'Restores pet hunger per tick.',                             multiplier: 12,   scaling: 'scaled', hint: 'Formula: 12% × (STR / 100) per min' },
-    hungerRestore2: { title: '🍲 Hunger Restore II',          subtitle: 'Restores pet hunger per tick.',                             multiplier: 14,   scaling: 'scaled', hint: 'Formula: 14% × (STR / 100) per min' },
-  };
+  // Base chance per minute (at STR 100) and effect values, taken from the game bundle (1294).
+  // Every chance and every effect scales with STR / 100. Weather abilities only roll in their weather.
+  const ABILITIES = [
+    { group:'Mutation granters', items:[
+      { id:'RainbowGranter', name:'Rainbow Granter', chance:.72, desc:'Chance per minute to turn a garden crop Rainbow.' },
+      { id:'GoldGranter', name:'Gold Granter', chance:.72, desc:'Chance per minute to turn a garden crop Gold.' },
+      { id:'AmberlitGranter', name:'Amberlit Granter', chance:2, desc:'Chance per minute to give a garden crop Amberlit.', pets:'Fire Horse, Phoenix' },
+      { id:'DawnlitGranter', name:'Dawnlit Granter', chance:4, desc:'Chance per minute to give a garden crop Dawnlit.', pets:'Sheep, Horse' },
+      { id:'ThunderstruckGranter', name:'Thunderstruck Granter', chance:5, desc:'Chance per minute to give a garden crop Thunderstruck.', pets:'Bat, Platypus, Thunder Wolf' },
+      { id:'FrostGranter', name:'Frost Granter', chance:6, desc:'Chance per minute to give a garden crop Frozen.', pets:'Caribou' },
+      { id:'SnowGranter', name:'Snow Granter', chance:8, desc:'Chance per minute to give a garden crop Chilled.', pets:'Snow Fox, Stoat' },
+      { id:'RainDance', name:'Rain Granter', chance:10, desc:'Chance per minute to give a garden crop Wet.', pets:'Turkey' },
+    ]},
+    { group:'Crop size', items:[
+      { id:'ProduceScaleBoost', name:'Crop Size Boost I', chance:.3, desc:'Chance per minute to increase the size of garden crops by +4.', pets:'Bee' },
+      { id:'ProduceScaleBoostII', name:'Crop Size Boost II', chance:.4, desc:'Chance per minute to increase the size of garden crops by +7.', pets:'Ostrich, Butterfly' },
+      { id:'SnowyCropSizeBoost', name:'Snow Crop Size Boost', chance:.8, weather:'Snow', desc:'Chance per minute during Snow to increase the size of garden crops by +8.', pets:'Caribou' },
+    ]},
+    { group:'Plant growth', items:[
+      { id:'PlantGrowthBoost', name:'Plant Growth Boost I', chance:24, growth:3, desc:'Chance per minute to take 3 minutes off growing plants.', pets:'Cow' },
+      { id:'PlantGrowthBoostII', name:'Plant Growth Boost II', chance:27, growth:5, desc:'Chance per minute to take 5 minutes off growing plants.', pets:'Turtle' },
+      { id:'SnowyPlantGrowthBoost', name:'Snow Plant Growth Boost', chance:40, growth:6, weather:'Snow', desc:'Chance per minute during Snow to take 6 minutes off growing plants.', pets:'Caribou' },
+      { id:'ThunderPlantGrowthBoost', name:'Thunder Plant Growth Boost', chance:50, growth:6, weather:'Thunderstorm', desc:'Chance per minute during Thunderstorms to take 6 minutes off growing plants.', pets:'Thunder Wolf' },
+      { id:'DawnPlantGrowthBoost', name:'Dawn Plant Growth Boost', chance:60, growth:6, weather:'Dawn', desc:'Chance per minute during Dawn to take 6 minutes off growing plants.', pets:'Horse' },
+      { id:'AmberPlantGrowthBoost', name:'Amber Plant Growth Boost', chance:80, growth:6, weather:'Amber Moon', desc:'Chance per minute during Amber Moon to take 6 minutes off growing plants.', pets:'Fire Horse' },
+    ]},
+    { group:'Egg growth', items:[
+      { id:'EggGrowthBoost', name:'Egg Growth Boost I', chance:21, egg:7, desc:'Chance per minute to take 7 minutes off garden eggs.', pets:'Chicken' },
+      { id:'EggGrowthBoostII_NEW', name:'Egg Growth Boost II', chance:24, egg:9, desc:'Chance per minute to take 9 minutes off garden eggs.', pets:'Turkey' },
+      { id:'EggGrowthBoostII', name:'Egg Growth Boost III', chance:27, egg:11, desc:'Chance per minute to take 11 minutes off garden eggs.', pets:'Turtle' },
+      { id:'ThunderEggGrowthBoost', name:'Thunder Egg Growth Boost', chance:50, egg:10, weather:'Thunderstorm', desc:'Chance per minute during Thunderstorms to take 10 minutes off garden eggs.', pets:'Platypus' },
+      { id:'AmberEggGrowthBoost', name:'Amber Egg Growth Boost', chance:90, egg:16, weather:'Amber Moon', desc:'Chance per minute during Amber Moon to take 16 minutes off garden eggs.', pets:'Rooster' },
+    ]},
+    { group:'Finders', items:[
+      { id:'SeedFinderI', name:'Seed Finder I', chance:40, desc:'Chance per minute to find a Common or Uncommon seed.', pets:'Worm' },
+      { id:'SeedFinderII', name:'Seed Finder II', chance:20, desc:'Chance per minute to find a Rare or Legendary seed.', pets:'Cow, Pony, Bat' },
+      { id:'SeedFinderIII', name:'Seed Finder III', chance:10, desc:'Chance per minute to find a Mythical seed.', pets:'Red Fox, Butterfly' },
+      { id:'SeedFinderIV', name:'Seed Finder IV', chance:.72, desc:'Chance per minute to find a Divine seed.', pets:'Phoenix' },
+      { id:'CoinFinderI', name:'Coin Finder I', chance:35, desc:'Chance per minute to find up to 120,000 coins.', pets:'Snail' },
+      { id:'CoinFinderII', name:'Coin Finder II', chance:13, desc:'Chance per minute to find up to 1,200,000 coins.', pets:'Bunny' },
+      { id:'CoinFinderIII', name:'Coin Finder III', chance:6, desc:'Chance per minute to find up to 10,000,000 coins.', pets:'Squirrel, Pony' },
+      { id:'CoinFinderIV', name:'Coin Finder IV', chance:3, desc:'Chance per minute to find up to 40,000,000 coins.', pets:'Red Fox' },
+    ]},
+    { group:'Other', items:[
+      { id:'ProduceEater', name:'Crop Eater', chance:60, desc:'Chance per minute to eat a non-mutated crop and pay 150% of its value.', pets:'Worm' },
+      { id:'HungerRestore', name:'Hunger Restore I', chance:12, desc:'Chance per minute to restore 30% of a pet’s hunger.', pets:'Dragonfly' },
+      { id:'HungerRestoreII', name:'Hunger Restore II', chance:14, desc:'Chance per minute to restore 35% of a pet’s hunger.', pets:'Turtle, Pony' },
+      { id:'HungerRestoreIII', name:'Hunger Restore III', chance:16, desc:'Chance per minute to restore 40% of a pet’s hunger.', pets:'Red Fox' },
+      { id:'Rebirth', name:'Rebirth', chance:20, desc:'Chance per minute to fully refill the hunger of a starving pet.', pets:'Phoenix' },
+    ]},
+  ];
+  const ABILITY_BY_ID = new Map(ABILITIES.flatMap(group => group.items).map(item => [item.id, item]));
+  // Which pets roll each granter is set by the game; Rainbow and Gold granters come from mutated pets only.
+  ABILITY_BY_ID.get('RainbowGranter').pets = 'Any Rainbow pet';
+  ABILITY_BY_ID.get('GoldGranter').pets = 'Any Gold pet';
 
-  function selectedAbility() { return ABILITY_MAP[document.getElementById('granterType').value]; }
+  const EGGS = [
+    ['CommonEgg', 'Common Egg', 600], ['UncommonEgg', 'Uncommon Egg', 3600], ['RareEgg', 'Rare Egg', 21600],
+    ['LegendaryEgg', 'Legendary Egg', 43200], ['SnowEgg', 'Snow Egg', 43200], ['WinterEgg', 'Winter Egg', 43200],
+    ['DawnEgg', 'Dawn Egg', 43200], ['ThunderEgg', 'Thunder Egg', 43200], ['HorseEgg', 'Horse Egg', 43200],
+    ['MythicalEgg', 'Mythical Egg', 86400], ['AmberEgg', 'Amber Egg', 86400],
+  ];
 
-  function isEggGrowth() {
-    return document.getElementById('granterType').value.startsWith('eggGrowth');
-  }
-
-  function onGranterChange() {
-    const ability = selectedAbility();
-    document.getElementById('cardTitle').textContent    = ability.title;
-    document.getElementById('cardSubtitle').textContent = ability.subtitle;
-    document.getElementById('hintText').innerHTML       = ability.hint;
-    document.getElementById('eggTypeWrap').style.display = isEggGrowth() ? 'block' : 'none';
-    document.getElementById('granterOut').classList.remove('show');
-  }
-
-  function togglePet(n) {
-    const active = document.getElementById('chk' + n).checked;
-    document.getElementById('slot' + n).classList.toggle('disabled', !active);
-  }
-
-  // Live sync: number box → slider + display label, no clamping while typing
-  function liveSync(n) {
-    const raw = +document.getElementById('num' + n).value;
-    if (raw >= 50 && raw <= 100) {
-      document.getElementById('rng' + n).value = raw;
-      document.getElementById('val' + n).textContent = raw;
+  const SAVE_KEY = 'mg-granter';
+  const $ = id => document.getElementById(id);
+  const state = { ability:'RainbowGranter', egg:'CommonEgg', crystal:false, pets:[{ on:true, str:100 }, { on:true, str:100 }, { on:true, str:100 }] };
+  try {
+    const saved = JSON.parse(localStorage.getItem(SAVE_KEY));
+    if (saved && ABILITY_BY_ID.has(saved.ability)) state.ability = saved.ability;
+    if (saved && EGGS.some(egg => egg[0] === saved.egg)) state.egg = saved.egg;
+    if (saved) state.crystal = Boolean(saved.crystal);
+    if (Array.isArray(saved?.pets) && saved.pets.length === 3) {
+      state.pets = saved.pets.map(pet => ({ on:pet.on !== false, str:Math.max(50, Math.min(100, Number(pet.str) || 100)) }));
     }
+  } catch (_) {}
+  const save = () => { try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch (_) {} };
+
+  $('granterType').innerHTML = ABILITIES.map(group => '<optgroup label="' + group.group + '">'
+    + group.items.map(item => '<option value="' + item.id + '">' + item.name + '</option>').join('') + '</optgroup>').join('');
+  $('eggType').innerHTML = EGGS.map(([id, name, seconds]) => '<option value="' + id + '">' + name + ' (' + formatDuration(seconds) + ')</option>').join('');
+
+  function renderPetSlots() {
+    $('petSlots').innerHTML = state.pets.map((pet, index) => `
+      <div class="pet-slot${pet.on ? '' : ' disabled'}">
+        <div class="pet-header">
+          <label class="pet-label-group" for="chk${index}">
+            <input type="checkbox" class="pet-toggle" id="chk${index}" data-pet="${index}" data-field="on"${pet.on ? ' checked' : ''}>
+            <span class="pet-label">Pet ${index + 1}</span>
+          </label>
+          <span class="pet-val">${pet.str + (state.crystal ? 10 : 0)} STR</span>
+        </div>
+        <div class="slider-row">
+          <input type="number" min="50" max="100" value="${pet.str}" data-pet="${index}" data-field="str" aria-label="Pet ${index + 1} strength">
+          <input type="range" min="50" max="100" value="${pet.str}" data-pet="${index}" data-field="str" aria-label="Pet ${index + 1} strength slider">
+        </div>
+      </div>`).join('');
   }
 
-  // On blur: clamp and fully sync everything
-  function clampPet(n) {
-    const num = document.getElementById('num' + n);
-    const clamped = Math.max(50, Math.min(100, +num.value || 50));
-    num.value = clamped;
-    document.getElementById('rng' + n).value = clamped;
-    document.getElementById('val' + n).textContent = clamped;
-  }
-
-  // Slider → number box + display label
-  function syncPet(n, source) {
-    const rng = document.getElementById('rng' + n);
-    const clamped = Math.max(50, Math.min(100, +rng.value));
-    document.getElementById('num' + n).value = clamped;
-    document.getElementById('val' + n).textContent = clamped;
-  }
+  $('petSlots').addEventListener('input', event => {
+    const target = event.target;
+    const pet = state.pets[Number(target.dataset.pet)];
+    if (!pet) return;
+    if (target.dataset.field === 'on') {
+      pet.on = target.checked;
+      target.closest('.pet-slot').classList.toggle('disabled', !pet.on);
+    } else {
+      const value = Number(target.value);
+      if (!(value >= 50 && value <= 100)) return; // wait until the typed number is in range
+      pet.str = Math.round(value);
+      const slot = target.closest('.pet-slot');
+      slot.querySelectorAll('[data-field="str"]').forEach(input => { if (input !== target) input.value = pet.str; });
+      slot.querySelector('.pet-val').textContent = (pet.str + (state.crystal ? 10 : 0)) + ' STR';
+    }
+    calc();
+  });
+  $('petSlots').addEventListener('change', event => {
+    if (event.target.type === 'number') event.target.value = state.pets[Number(event.target.dataset.pet)].str;
+  });
+  $('granterType').addEventListener('change', event => { state.ability = event.target.value; calc(); });
+  $('eggType').addEventListener('change', event => { state.egg = event.target.value; calc(); });
+  $('chkCrystal').addEventListener('change', event => { state.crystal = event.target.checked; renderPetSlots(); calc(); });
 
   function formatDuration(seconds) {
-    const h = Math.floor(seconds / 3600);
+    if (!Number.isFinite(seconds)) return 'never';
+    const d = Math.floor(seconds / 86400);
+    const h = Math.floor((seconds % 86400) / 3600);
     const m = Math.floor((seconds % 3600) / 60);
     const s = Math.round(seconds % 60);
+    if (d > 0) return `${d}d ${h}h ${m}m`;
     if (h > 0) return `${h}h ${m}m ${s}s`;
     if (m > 0) return `${m}m ${s}s`;
     return `${s}s`;
@@ -373,86 +381,57 @@
 
   /**
    * A pet's STR as the game reckons it. The slider is what the pet has earned, capped at 100; a
-   * Strength Crystal adds ten on top of that and is deliberately not clamped, because the game adds
-   * its bonus to the figure without a ceiling - a maxed pet really does roll at 110.
+   * Strength Crystal adds ten on top and is deliberately not clamped, because the game adds its bonus
+   * without a ceiling - a maxed pet really does roll at 110.
    */
-  function petStrength(n) {
-    const stat = Math.max(50, Math.min(100, +document.getElementById('num' + n).value));
-    return stat + (document.getElementById('chkCrystal').checked ? 10 : 0);
-  }
+  const petStrength = pet => pet.str + (state.crystal ? 10 : 0);
 
-  function calcGranter() {
-    const ability = selectedAbility();
+  function calc() {
+    save();
+    const ability = ABILITY_BY_ID.get(state.ability);
+    $('abilityDesc').textContent = ability.desc;
+    $('abilityMeta').innerHTML = (ability.pets ? '<span class="chip">' + ability.pets + '</span>' : '')
+      + (ability.weather ? '<span class="chip warn">' + ability.weather + ' only</span>' : '');
+    $('eggTypeWrap').hidden = !ability.egg;
+    $('hintText').textContent = 'Each pet rolls ' + ability.chance + '% × STR / 100 per minute, checked every second.';
 
-    const petTickRates = [1, 2, 3]
-      .filter(n => document.getElementById('chk' + n).checked)
-      .map(n => {
-        const stat = petStrength(n);
-        const chancePerMin = ability.scaling === 'flat'
-          ? ability.multiplier * stat
-          : ability.multiplier * (stat / 100);
-        return 1 - Math.pow(1 - chancePerMin / 100, 1 / 60);
-      });
+    const active = state.pets.filter(pet => pet.on);
+    // Each pet's per-minute chance is spread over sixty one-second checks, as the game rolls them.
+    const perSecond = active.map(pet => 1 - Math.pow(1 - ability.chance / 100 * petStrength(pet) / 100, 1 / 60));
+    const combined = active.length ? 1 - perSecond.reduce((acc, p) => acc * (1 - p), 1) : 0;
+    const empty = !combined;
+    $('r-chance').textContent = empty ? '-' : ((1 - Math.pow(1 - combined, 60)) * 100).toFixed(2) + '%';
+    $('r-avg').textContent = empty ? '-' : formatDuration(1 / combined);
+    $('r-95').textContent = empty ? '-' : formatDuration(-Math.log(.05) / combined);
+    $('r-99').textContent = empty ? '-' : formatDuration(-Math.log(.01) / combined);
 
-    if (petTickRates.length === 0) {
-      alert('Enable at least one pet to calculate.');
-      return;
+    // Expected effect minutes per real minute: each pet fires 60 x its per-second chance times a
+    // minute, and each firing is worth the ability's minutes scaled by that pet's STR.
+    const effectPerMinute = amount => active.reduce((sum, pet, index) => sum + 60 * perSecond[index] * amount * petStrength(pet) / 100, 0);
+
+    $('r-growth-row').hidden = !ability.growth;
+    if (ability.growth) $('r-growth').textContent = empty ? '-' : formatDuration(effectPerMinute(ability.growth) * 3600);
+
+    ['r-egg-base-row', 'r-egg-boosted-row', 'r-egg-saved-row'].forEach(id => { $(id).hidden = !ability.egg; });
+    if (ability.egg) {
+      const base = EGGS.find(egg => egg[0] === state.egg)[2];
+      // The egg ages one minute per minute plus whatever the boosts take off, so it hatches at
+      // base / (1 + minutes removed per minute).
+      const boosted = base / (1 + effectPerMinute(ability.egg));
+      $('r-egg-base').textContent = formatDuration(base);
+      $('r-egg-boosted').textContent = formatDuration(boosted);
+      $('r-egg-saved').textContent = formatDuration(base - boosted);
     }
-
-    const combinedTickRate  = 1 - petTickRates.reduce((acc, p) => acc * (1 - p), 1);
-    const totalChancePerMin = (1 - Math.pow(1 - combinedTickRate, 60)) * 100;
-
-    const meanWait = 1 / combinedTickRate;
-    const within95 = -Math.log(1 - 0.95) / combinedTickRate;
-    const within99 = -Math.log(1 - 0.99) / combinedTickRate;
-
-    document.getElementById('r-chance').textContent = totalChancePerMin.toFixed(2) + '%';
-    document.getElementById('r-avg').textContent    = formatDuration(meanWait);
-    document.getElementById('r-95').textContent     = formatDuration(within95);
-    document.getElementById('r-99').textContent     = formatDuration(within99);
-
-    const showEgg = isEggGrowth();
-    document.getElementById('r-egg-base-row').style.display    = showEgg ? 'flex' : 'none';
-    document.getElementById('r-egg-boosted-row').style.display = showEgg ? 'flex' : 'none';
-    document.getElementById('r-egg-saved-row').style.display   = showEgg ? 'flex' : 'none';
-
-    if (showEgg) {
-      const baseSeconds = parseInt(document.getElementById('eggType').value, 10);
-      const baseMinutes = baseSeconds / 60;
-      const totalBoostMin = [1, 2, 3]
-        .filter(n => document.getElementById('chk' + n).checked)
-        .reduce((sum, n) => sum + ability.eggBoostMin * (petStrength(n) / 100), 0);
-      const effectiveSpeed = 1 + totalBoostMin;
-      const boostedMinutes = baseMinutes / effectiveSpeed;
-      const boostedSeconds = boostedMinutes * 60;
-      const saved = baseSeconds - boostedSeconds;
-
-      document.getElementById('r-egg-base').textContent    = formatDuration(baseSeconds);
-      document.getElementById('r-egg-boosted').textContent = formatDuration(boostedSeconds);
-      document.getElementById('r-egg-saved').textContent   = formatDuration(saved);
-    }
-
-    const panel = document.getElementById('granterOut');
-    panel.classList.remove('show');
-    void panel.offsetWidth;
-    panel.classList.add('show');
+    $('resultNote').textContent = empty ? 'Turn on at least one pet to see results.'
+      : 'Averages. Real waits vary; the 95% and 99% rows show how long an unlucky run can take.'
+        + (ability.weather ? ' Weather abilities only roll while ' + ability.weather + ' is active.' : '');
   }
 
-  function resetInitialState() {
-    document.getElementById('granterType').value = 'rainbow';
-    document.getElementById('eggType').value = '600';
-    [1, 2, 3].forEach(n => {
-      document.getElementById('chk' + n).checked = true;
-      document.getElementById('num' + n).value = 50;
-      document.getElementById('rng' + n).value = 50;
-      document.getElementById('val' + n).textContent = '50';
-      togglePet(n);
-    });
-    onGranterChange();
-  }
-
-  resetInitialState();
-  window.addEventListener('pageshow', resetInitialState);
+  $('granterType').value = state.ability;
+  $('eggType').value = state.egg;
+  $('chkCrystal').checked = state.crystal;
+  renderPetSlots();
+  calc();
 </script>
 </body>
 </html>
