@@ -251,10 +251,10 @@
     { group:'Mutation granters', items:[
       { id:'RainbowGranter', name:'Rainbow Granter', chance:.72, desc:'Chance per minute to turn a garden crop Rainbow.' },
       { id:'GoldGranter', name:'Gold Granter', chance:.72, desc:'Chance per minute to turn a garden crop Gold.' },
-      { id:'AmberlitGranter', name:'Amberlit Granter', chance:2, desc:'Chance per minute to give a garden crop Amberlit.', pets:'Fire Horse, Phoenix' },
-      { id:'DawnlitGranter', name:'Dawnlit Granter', chance:4, desc:'Chance per minute to give a garden crop Dawnlit.', pets:'Sheep, Horse' },
-      { id:'ThunderstruckGranter', name:'Thunderstruck Granter', chance:5, desc:'Chance per minute to give a garden crop Thunderstruck.', pets:'Bat, Platypus, Thunder Wolf' },
-      { id:'FrostGranter', name:'Frost Granter', chance:6, desc:'Chance per minute to give a garden crop Frozen.', pets:'Caribou' },
+      { id:'AmberlitGranter', name:'Amberlit Granter', chance:2, desc:'Chance per minute to give a garden crop Amberlit.', pets:'Fire Horse, Phoenix, Toad' },
+      { id:'DawnlitGranter', name:'Dawnlit Granter', chance:4, desc:'Chance per minute to give a garden crop Dawnlit.', pets:'Sheep, Horse, Toad' },
+      { id:'ThunderstruckGranter', name:'Thunderstruck Granter', chance:5, desc:'Chance per minute to give a garden crop Thunderstruck.', pets:'Bat, Platypus, Thunder Wolf, Snake' },
+      { id:'FrostGranter', name:'Frost Granter', chance:6, desc:'Chance per minute to give a garden crop Frozen.', pets:'Caribou, Moth' },
       { id:'SnowGranter', name:'Snow Granter', chance:8, desc:'Chance per minute to give a garden crop Chilled.', pets:'Snow Fox, Stoat' },
       { id:'RainDance', name:'Rain Granter', chance:10, desc:'Chance per minute to give a garden crop Wet.', pets:'Turkey' },
     ]},
@@ -266,6 +266,7 @@
     { group:'Plant growth', items:[
       { id:'PlantGrowthBoost', name:'Plant Growth Boost I', chance:24, growth:3, desc:'Chance per minute to take 3 minutes off growing plants.', pets:'Cow' },
       { id:'PlantGrowthBoostII', name:'Plant Growth Boost II', chance:27, growth:5, desc:'Chance per minute to take 5 minutes off growing plants.', pets:'Turtle' },
+      { id:'PlantGrowthBoostIII', name:'Plant Growth Boost III', chance:30, growth:7, desc:'Chance per minute to take 7 minutes off growing plants.', pets:'Moth' },
       { id:'SnowyPlantGrowthBoost', name:'Snow Plant Growth Boost', chance:40, growth:6, weather:'Snow', desc:'Chance per minute during Snow to take 6 minutes off growing plants.', pets:'Caribou' },
       { id:'ThunderPlantGrowthBoost', name:'Thunder Plant Growth Boost', chance:50, growth:6, weather:'Thunderstorm', desc:'Chance per minute during Thunderstorms to take 6 minutes off growing plants.', pets:'Thunder Wolf' },
       { id:'DawnPlantGrowthBoost', name:'Dawn Plant Growth Boost', chance:60, growth:6, weather:'Dawn', desc:'Chance per minute during Dawn to take 6 minutes off growing plants.', pets:'Horse' },
@@ -274,7 +275,7 @@
     { group:'Egg growth', items:[
       { id:'EggGrowthBoost', name:'Egg Growth Boost I', chance:21, egg:7, desc:'Chance per minute to take 7 minutes off garden eggs.', pets:'Chicken' },
       { id:'EggGrowthBoostII_NEW', name:'Egg Growth Boost II', chance:24, egg:9, desc:'Chance per minute to take 9 minutes off garden eggs.', pets:'Turkey' },
-      { id:'EggGrowthBoostII', name:'Egg Growth Boost III', chance:27, egg:11, desc:'Chance per minute to take 11 minutes off garden eggs.', pets:'Turtle' },
+      { id:'EggGrowthBoostII', name:'Egg Growth Boost III', chance:27, egg:11, desc:'Chance per minute to take 11 minutes off garden eggs.', pets:'Turtle, Toad' },
       { id:'ThunderEggGrowthBoost', name:'Thunder Egg Growth Boost', chance:50, egg:10, weather:'Thunderstorm', desc:'Chance per minute during Thunderstorms to take 10 minutes off garden eggs.', pets:'Platypus' },
       { id:'AmberEggGrowthBoost', name:'Amber Egg Growth Boost', chance:90, egg:16, weather:'Amber Moon', desc:'Chance per minute during Amber Moon to take 16 minutes off garden eggs.', pets:'Rooster' },
     ]},
@@ -292,7 +293,7 @@
       { id:'ProduceEater', name:'Crop Eater', chance:60, desc:'Chance per minute to eat a non-mutated crop and pay 150% of its value.', pets:'Worm' },
       { id:'HungerRestore', name:'Hunger Restore I', chance:12, desc:'Chance per minute to restore 30% of a pet’s hunger.', pets:'Dragonfly' },
       { id:'HungerRestoreII', name:'Hunger Restore II', chance:14, desc:'Chance per minute to restore 35% of a pet’s hunger.', pets:'Turtle, Pony' },
-      { id:'HungerRestoreIII', name:'Hunger Restore III', chance:16, desc:'Chance per minute to restore 40% of a pet’s hunger.', pets:'Red Fox' },
+      { id:'HungerRestoreIII', name:'Hunger Restore III', chance:16, desc:'Chance per minute to restore 40% of a pet’s hunger.', pets:'Red Fox, Snake' },
       { id:'Rebirth', name:'Rebirth', chance:20, desc:'Chance per minute to fully refill the hunger of a starving pet.', pets:'Phoenix' },
     ]},
   ];
@@ -305,7 +306,7 @@
     ['CommonEgg', 'Common Egg', 600], ['UncommonEgg', 'Uncommon Egg', 3600], ['RareEgg', 'Rare Egg', 21600],
     ['LegendaryEgg', 'Legendary Egg', 43200], ['SnowEgg', 'Snow Egg', 43200], ['WinterEgg', 'Winter Egg', 43200],
     ['DawnEgg', 'Dawn Egg', 43200], ['ThunderEgg', 'Thunder Egg', 43200], ['HorseEgg', 'Horse Egg', 43200],
-    ['MythicalEgg', 'Mythical Egg', 86400], ['AmberEgg', 'Amber Egg', 86400],
+    ['MythicalEgg', 'Mythical Egg', 86400], ['AmberEgg', 'Amber Egg', 86400], ['SpookyEgg', 'Spooky Egg', 86400],
   ];
 
   const SAVE_KEY = 'mg-granter';
